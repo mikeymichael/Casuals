@@ -7,39 +7,56 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <header>
-    <h1>Casual Workers Management System</h1>
-  </header>
+  <div class="layout">
+    <nav class="sidebar">
+      <h2>Workers System</h2>
+      <ul>
+        <li><a href="#" class="nav-link active" data-page="dashboard">Dashboard</a></li>
+        <li><a href="#" class="nav-link" data-page="workers">Workers</a></li>
+        <li><a href="#" class="nav-link" data-page="workdays">Workdays</a></li>
+      </ul>
+    </nav>
 
-  <main>
-    <section class="dashboard">
-      <div class="card">
-        <h3>Total Workers</h3>
-        <p id="workerCount">0</p>
-      </div>
-    </section>
+    <div class="content">
+      <header>
+        <h1>Casual Workers Management System</h1>
+      </header>
 
-    <section class="actions">
-      <button id="openForm">Add Worker</button>
-      <input type="text" id="searchInput" placeholder="Search by name">
-    </section>
+      <main>
+        <section id="dashboardPage" class="page active">
+          <div class="card">
+            <h3>Total Workers</h3>
+            <p id="workerCount">0</p>
+          </div>
+        </section>
 
-    <section>
-      <table>
-        <thead>
-          <tr>
-            <th>Name</th><th>ID Number</th><th>Residence</th><th>Phone</th>
-          </tr>
-        </thead>
-        <tbody id="workerTable">
-        </tbody>
-      </table>
-    </section>
-  </main>
+        <section id="workersPage" class="page">
+          <div class="actions">
+            <button id="openForm">Add Worker</button>
+            <input type="text" id="searchInput" placeholder="Search by name">
+          </div>
+          <table>
+            <thead>
+              <tr><th>Name</th><th>ID</th><th>Residence</th><th>Phone</th></tr>
+            </thead>
+            <tbody id="workerTable"></tbody>
+          </table>
+        </section>
+
+        <section id="workdaysPage" class="page">
+          <p>Workdays module coming soon...</p>
+        </section>
+      </main>
+
+      <footer>
+        Created and Developed by MMKibinge
+      </footer>
+    </div>
+  </div>
 
   <div class="modal" id="workerModal">
     <div class="modal-content">
-      <h3>Add Worker</h3>
+      <h3>Add New Worker</h3>
       <form id="workerForm">
         <input type="text" id="name" placeholder="Name" required>
         <input type="text" id="id" placeholder="ID Number" required>
@@ -50,10 +67,6 @@
       </form>
     </div>
   </div>
-
-  <footer>
-    Created and Developed by MMKibinge
-  </footer>
 
   <script src="script.js"></script>
 </body>
