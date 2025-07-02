@@ -1,0 +1,92 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: 'Segoe UI', sans-serif;
+}
+body {
+  background: #f4f6fa;
+}
+.app {
+  display: flex;
+  min-height: 100vh;
+}
+.sidebar {
+  width: 200px;
+  background: #0a74da;
+  color: white;
+  padding: 1rem;
+}
+.sidebar h2 {
+  margin-bottom: 2rem;
+}
+.sidebar nav a {
+  display: block;
+  color: white;
+  text-decoration: none;
+  margin-bottom: 1rem;
+}
+.sidebar nav a.active {
+  font-weight: bold;
+  background: rgba(255,255,255,0.2);
+  padding: 0.5rem;
+  border-radius: 4px;
+}
+.main-content {
+  flex-grow: 1;
+  padding: 1rem 2rem;
+  background: #fff;
+}
+.top-bar {
+  background: #f0f4fb;
+  padding: 1rem;
+  margin-bottom: 1.5rem;
+  border-radius: 8px;
+}
+.dashboard {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+.card {
+  flex: 1;
+  background: #e1ecfc;
+  padding: 1rem;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+}
+.icon {
+  font-size: 2rem;
+  margin-right: 1rem;
+}
+.workers-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+.workers-header input {
+  padding: 0.5rem;
+  width: 200px;
+}
+.workers-header button {
+  background: #0a74da;
+  color: white;
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 6px;
+}
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+table th, table td {
+  padding: 0.75rem;
+  border-bottom: 1px solid #ddd;
+}
+footer {
+  margin-top: 2rem;
+  text-align: center;
+  color: #777;
+}

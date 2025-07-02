@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Casual Workers Management System</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar">
+      <h2>Casual Workers</h2>
+      <nav>
+        <a href="#" class="active">Dashboard</a>
+        <a href="#">Workers</a>
+        <a href="#">Workdays</a>
+      </nav>
+    </aside>
+    <main class="main-content">
+      <header class="top-bar">
+        <h1>Casual Workers Management System</h1>
+      </header>
+      <section class="dashboard">
+        <div class="card">
+          <div class="icon">👥</div>
+          <div class="info">
+            <h3>Total Workers</h3>
+            <p id="totalWorkers">0</p>
+          </div>
+        </div>
+        <div class="card">
+          <div class="icon">💰</div>
+          <div class="info">
+            <h3>Total Pay This Week</h3>
+            <p id="totalPay">KSH 0.00</p>
+          </div>
+        </div>
+      </section>
+      <section class="workers">
+        <div class="workers-header">
+          <h2>Workers</h2>
+          <input type="text" placeholder="Search..." id="searchInput" />
+          <button id="addWorkerBtn">Add Worker</button>
+        </div>
+        <table>
+          <thead>
+            <tr>
+              <th>Name</th><th>ID Number</th><th>Residence</th><th>SHA Account</th>
+            </tr>
+          </thead>
+          <tbody id="workersTableBody">
+          </tbody>
+        </table>
+      </section>
+      <footer>
+        Created and Developed by MMKibinge
+      </footer>
+    </main>
+  </div>
+  <script src="script.js"></script>
+</body>
+</html>
