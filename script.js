@@ -1,133 +1,68 @@
-const workdaysTable = document.getElementById('workdaysTable');
-const totalDaysDisplay = document.getElementById('totalDaysWorked');
+const workers = JSON.parse(localStorage.getItem('workersData')) || [];
 
-// Demo workers list (would be dynamic in real app)
-const workers = [
-  { name: 'John Doe', id: '123' },
-  { name: 'Jane Smith', id: '456' },
-  { name: 'Ali Mwangi', id: '789' },
-];
+function showSection(id) {
+  if (!document.getElementById(id)) return; // prevent crash
+  document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  if (id === 'dashboard') renderReport();
+}
 
-const weekdays = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
-let workdays = JSON.parse(localStorage.getItem('workdays')) || {};
-
-function renderWorkdays() {
-  workdaysTable.innerHTML = '';
-  let total = 0;
+function renderReport() {
+  document.getElementById('total-workers').innerText = workers.length;
+  let totalPay = 0;
+  const tbody = document.querySelector('#report-table tbody');
+  tbody.innerHTML = '';
+  const now = new Date();
+  const month = now.getMonth();
 
   workers.forEach(w => {
-    if (!workdays[w.id]) workdays[w.id] = Array(7).fill(false);
-
-    const row = document.createElement('tr');
-    row.innerHTML = `<td>${w.name}</td><td>${w.id}</td>`;
-
-    workdays[w.id].forEach((worked, i) => {
-      const cell = document.createElement('td');
-      const dot = document.createElement('span');
-      dot.className = 'workday-cell' + (worked ? ' worked' : '');
-      dot.title = weekdays[i];
-      dot.addEventListener('click', () => {
-        workdays[w.id][i] = !workdays[w.id][i];
-        saveWorkdays();
-        renderWorkdays();
-      });
-      cell.appendChild(dot);
-      row.appendChild(cell);
-      if (worked) total++;
+    let weekly = 0, unpaid = 0, monthly = 0;
+    (w.attendance || []).forEach(a => {
+      const date = new Date(a.date);
+      if (a.pay) {
+        weekly += a.pay;
+        if (date.getMonth() === month) monthly += a.pay;
+      } else {
+        unpaid++;
+      }
     });
-
-    workdaysTable.appendChild(row);
+    totalPay += weekly;
+    tbody.innerHTML += `
+      <tr>
+        <td>${w.name}</td>
+        <td>${w.idNumber}</td>
+        <td>${weekly}</td>
+        <td>${unpaid}</td>
+        <td>${monthly}</td>
+      </tr>`;
   });
 
-  totalDaysDisplay.textContent = total;
+  document.getElementById('total-pay').innerText = totalPay.toFixed(2);
 }
 
-function saveWorkdays() {
-  localStorage.setItem('workdays', JSON.stringify(workdays));
-}
-
-renderWorkdays();
-
-const openBtn = document.getElementById('openForm');
-const closeBtn = document.getElementById('closeForm');
-const modal = document.getElementById('workerModal');
-const form = document.getElementById('workerForm');
-const table = document.getElementById('workerTable');
-const search = document.getElementById('searchInput');
-const countDisplay = document.getElementById('workerCount');
-
-let workers = JSON.parse(localStorage.getItem('workers')) || [];
-let workdays = JSON.parse(localStorage.getItem('workdays')) || {};
-
-function saveAndRender() {
-  localStorage.setItem('workers', JSON.stringify(workers));
-  renderTable(workers);
-  countDisplay.textContent = workers.length;
-}
-function renderTable(data) {
-  table.innerHTML = "";
-  data.forEach(w => {
-    const row = document.createElement('tr');
-    row.innerHTML = `<td>${w.name}</td><td>${w.id}</td><td>${w.residence}</td><td>${w.phone}</td><td><button onclick="viewWorker('${w.id}')">View</button></td>`;
-    table.appendChild(row);
+function exportReport() {
+  const rows = [["Name", "ID", "Total Paid", "Total Unpaid", "Paid This Month"]];
+  document.querySelectorAll('#report-table tbody tr').forEach(tr => {
+    const cols = Array.from(tr.children).map(td => td.innerText);
+    rows.push(cols);
   });
+  const csv = rows.map(r => r.join(',')).join('\\n');
+  const blob = new Blob([csv], { type: 'text/csv' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'worker_report.csv';
+  a.click();
 }
 
-openBtn.onclick = () => modal.style.display = "flex";
-closeBtn.onclick = () => modal.style.display = "none";
-
-form.onsubmit = function(e) {
+document.getElementById('worker-form').addEventListener('submit', e => {
   e.preventDefault();
   const name = document.getElementById('name').value;
-  const id = document.getElementById('id').value;
+  const idNumber = document.getElementById('idNumber').value;
   const residence = document.getElementById('residence').value;
-  const phone = document.getElementById('phone').value;
-  workers.push({ name, id, residence, phone });
-  form.reset();
-  modal.style.display = "none";
-  saveAndRender();
-};
-
-search.oninput = function() {
-  const term = this.value.toLowerCase();
-  const filtered = workers.filter(w => w.name.toLowerCase().includes(term));
-  renderTable(filtered);
-};
-
-document.querySelectorAll('.nav-link').forEach(link => {
-  link.addEventListener('click', function(e) {
-    e.preventDefault();
-    const page = this.dataset.page;
-    document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
-    this.classList.add('active');
-    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-    document.getElementById(page + "Page").classList.add('active');
-    if (page === "workdays") renderWorkdays();
-    if (page === "report") renderPayroll();
-  });
+  const shaAccount = document.getElementById('shaAccount').value;
+  workers.push({ name, idNumber, residence, shaAccount, attendance: [] });
+  localStorage.setItem('workersData', JSON.stringify(workers));
+  e.target.reset();
+  alert('Worker added');
 });
-
-function viewWorker(id) {
-  const w = workers.find(x => x.id === id);
-  const days = workdays[id] || Array(7).fill(false);
-  const totalDays = days.filter(Boolean).length;
-  const pay = totalDays * 500; // fixed rate
-  alert(`${w.name}
-Total Days Worked: ${totalDays}
-Total Pay: KES ${pay}`);
-}
-
-function renderPayroll() {
-  const tbody = document.getElementById('payrollTable');
-  tbody.innerHTML = '';
-  workers.forEach(w => {
-    const days = workdays[w.id] || Array(7).fill(false);
-    const worked = days.filter(Boolean).length;
-    const pay = worked * 500;
-    const row = document.createElement('tr');
-    row.innerHTML = `<td>${w.name}</td><td>${w.id}</td><td>${worked}</td><td>KES ${pay}</td>`;
-    tbody.appendChild(row);
-  });
-}
-
-saveAndRender();
