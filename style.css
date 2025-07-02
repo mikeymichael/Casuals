@@ -30,6 +30,14 @@ body {
 
 .sidebar ul li {
   cursor: pointer;
+  padding: 0.5rem 1rem;
+  background: #333;
+  border-radius: 5px;
+  transition: 0.3s;
+}
+
+.sidebar ul li:hover {
+  background: #555;
 }
 
 main {
@@ -49,6 +57,10 @@ main {
   border-radius: 8px;
   box-shadow: 0 4px 10px rgba(0,0,0,0.05);
 }
+
+.card.positive { border-left: 4px solid green; }
+.card.warning { border-left: 4px solid orange; }
+.card.danger { border-left: 4px solid red; }
 
 h2 {
   margin-top: 2rem;
@@ -72,14 +84,18 @@ th {
   color: white;
 }
 
-.export-btn {
+button {
   margin-top: 1rem;
-  padding: 0.5rem 1rem;
-  background: #28a745;
+  padding: 0.6rem 1.2rem;
+  background: #0a74da;
   color: white;
   border: none;
   border-radius: 5px;
   cursor: pointer;
+}
+
+button:hover {
+  background: #095ab5;
 }
 
 .form-grid {
@@ -88,10 +104,11 @@ th {
   gap: 1rem;
 }
 
-input, button {
+input, select {
   padding: 0.6rem;
   border: 1px solid #ccc;
   border-radius: 5px;
+  width: 100%;
 }
 
 footer {
