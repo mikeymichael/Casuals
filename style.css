@@ -1,11 +1,11 @@
 body {
   margin: 0;
   font-family: 'Segoe UI', sans-serif;
-  background-color: #f5f9ff;
+  background: #f2f6fc;
 }
 
 .topnav {
-  background-color: #0a74da;
+  background: #0a74da;
   color: white;
   padding: 1rem;
   text-align: center;
@@ -14,85 +14,67 @@ body {
 }
 
 .sidebar {
-  position: fixed;
-  top: 60px;
-  left: 0;
-  width: 200px;
-  height: 100%;
-  background-color: #1e1e2f;
-  padding-top: 20px;
+  background: #1e1e2f;
+  padding: 1rem;
+  color: white;
 }
 
-.sidebar nav ul {
-  list-style-type: none;
+.sidebar ul {
+  list-style: none;
   padding: 0;
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  justify-content: center;
 }
 
-.sidebar nav ul li {
-  padding: 12px;
-  text-align: center;
-}
-
-.sidebar nav ul li a {
-  text-decoration: none;
-  color: #fff;
-  font-weight: 500;
-}
-
-.sidebar nav ul li a:hover {
-  background-color: #333;
-  padding: 12px;
-  display: block;
+.sidebar ul li {
+  cursor: pointer;
 }
 
 main {
-  margin-left: 220px;
-  padding: 20px;
-}
-
-.content-section {
-  display: none;
-}
-
-.content-section.active {
-  display: block;
+  padding: 1rem;
 }
 
 .cards {
   display: flex;
-  gap: 20px;
   flex-wrap: wrap;
+  gap: 1rem;
 }
 
 .card {
-  background: #fff;
+  flex: 1 1 200px;
+  background: white;
   padding: 1rem;
-  border: 1px solid #ddd;
   border-radius: 8px;
-  flex: 1;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+}
+
+h2 {
+  margin-top: 2rem;
 }
 
 table {
   width: 100%;
   border-collapse: collapse;
-  margin-top: 20px;
+  margin-top: 1rem;
+  background: white;
 }
 
-table thead {
+th, td {
+  padding: 0.75rem;
+  border: 1px solid #ccc;
+  text-align: left;
+}
+
+th {
   background: #0a74da;
   color: white;
 }
 
-table th, table td {
-  padding: 10px;
-  border: 1px solid #ddd;
-  text-align: left;
-}
-
 .export-btn {
-  margin-top: 10px;
-  padding: 10px 20px;
+  margin-top: 1rem;
+  padding: 0.5rem 1rem;
   background: #28a745;
   color: white;
   border: none;
@@ -100,14 +82,34 @@ table th, table td {
   cursor: pointer;
 }
 
-.export-btn:hover {
-  background: #218838;
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 1rem;
+}
+
+input, button {
+  padding: 0.6rem;
+  border: 1px solid #ccc;
+  border-radius: 5px;
 }
 
 footer {
   text-align: center;
-  padding: 1rem;
-  margin-top: 2rem;
-  color: #777;
   font-size: 0.9rem;
+  color: #777;
+  margin: 2rem 0;
+}
+
+.section {
+  display: none;
+}
+.section.active {
+  display: block;
+}
+
+@media (max-width: 600px) {
+  .cards {
+    flex-direction: column;
+  }
 }
