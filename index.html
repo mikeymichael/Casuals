@@ -9,7 +9,6 @@
 </head>
 <body>
   <div class="topnav">Casual Workers Management System</div>
-
   <div class="sidebar">
     <ul>
       <li onclick="navigate('dashboard')">Dashboard</li>
@@ -17,16 +16,12 @@
       <li onclick="navigate('attendance')">Mark Attendance</li>
     </ul>
   </div>
-
   <main>
-    <!-- DASHBOARD -->
     <section id="dashboard" class="section active">
       <h2>📊 Dashboard Overview</h2>
       <div class="cards" id="dash-cards"></div>
       <canvas id="payChart" style="margin-top: 2rem;"></canvas>
     </section>
-
-    <!-- WORKERS -->
     <section id="workers" class="section">
       <h2>👥 Manage Workers</h2>
       <form id="worker-form">
@@ -38,14 +33,11 @@
         </div>
         <button type="submit">Add Worker</button>
       </form>
-
       <table id="workers-table">
         <thead><tr><th>Name</th><th>ID</th><th>Phone</th><th>Residence</th><th>Actions</th></tr></thead>
         <tbody></tbody>
       </table>
     </section>
-
-    <!-- ATTENDANCE -->
     <section id="attendance" class="section">
       <h2>📝 Mark Attendance</h2>
       <form id="attendance-form">
@@ -56,8 +48,7 @@
       </form>
     </section>
   </main>
-
-  <footer>Built with ❤️ by MMKibinge & GPT</footer>
+  <footer>Built bubbles</footer>
   <script src="script.js"></script>
 </body>
 </html>
