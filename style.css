@@ -1,132 +1,144 @@
-body {
-  margin: 0;
-  font-family: 'Segoe UI', sans-serif;
-  background: #f2f6fc;
+let workers = JSON.parse(localStorage.getItem('workersData')) || [{
+  name: 'John Doe', idNumber: '001', phone: '0712345678', residence: 'Nairobi',
+  attendance: [
+    { date: '2025-07-01', pay: 500 },
+    { date: '2025-07-02', pay: 600 },
+    { date: '2025-07-03' }
+  ]
+}];
+
+function saveWorkers() {
+  localStorage.setItem('workersData', JSON.stringify(workers));
 }
 
-.topnav {
-  background: #0a74da;
-  color: white;
-  padding: 1rem;
-  text-align: center;
-  font-size: 1.5rem;
-  font-weight: bold;
+function navigate(id) {
+  document.querySelectorAll('.section').forEach(sec => sec.classList.remove('active'));
+  const section = document.getElementById(id);
+  if (section) section.classList.add('active');
+  if (id === 'dashboard') renderDashboard();
+  if (id === 'workers') renderWorkers();
+  if (id === 'attendance') renderAttendanceOptions();
 }
 
-.sidebar {
-  background: #1e1e2f;
-  padding: 1rem;
-  color: white;
+function renderDashboard() {
+  const now = new Date();
+  const month = now.getMonth();
+  const thisWeek = [...Array(7)].map((_, i) => {
+    const d = new Date(now);
+    d.setDate(d.getDate() - i);
+    return d.toISOString().split('T')[0];
+  });
+
+  let total = 0, monthTotal = 0, unpaid = 0;
+  let lastAtt = '-', maxPay = 0, topWorker = '-';
+  workers.forEach(w => {
+    let weekly = 0, missed = 0, mPay = 0;
+    (w.attendance || []).forEach(a => {
+      if (thisWeek.includes(a.date)) weekly += a.pay || 0;
+      if (!a.pay) missed++;
+      if (new Date(a.date).getMonth() === month) mPay += a.pay || 0;
+      if (!lastAtt || new Date(a.date) > new Date(lastAtt)) lastAtt = a.date;
+    });
+    if (mPay > maxPay) { maxPay = mPay; topWorker = w.name; }
+    total += weekly;
+    monthTotal += mPay;
+    unpaid += missed;
+  });
+
+  document.getElementById('dash-cards').innerHTML = `
+    <div class="card positive"><strong>Total Workers</strong><br>${workers.length}</div>
+    <div class="card positive"><strong>Total Weekly Pay</strong><br>KSH ${total}</div>
+    <div class="card positive"><strong>Total Monthly Pay</strong><br>KSH ${monthTotal}</div>
+    <div class="card danger"><strong>Unpaid Days</strong><br>${unpaid}</div>
+    <div class="card warning"><strong>Top Earner</strong><br>${topWorker} (${maxPay})</div>
+    <div class="card"><strong>Last Attendance</strong><br>${lastAtt}</div>
+  `;
+
+  renderChart();
 }
 
-.sidebar ul {
-  list-style: none;
-  padding: 0;
-  display: flex;
-  gap: 1rem;
-  flex-wrap: wrap;
-  justify-content: center;
+function renderChart() {
+  const ctx = document.getElementById('payChart').getContext('2d');
+  const days = [...Array(7)].map((_, i) => {
+    const d = new Date();
+    d.setDate(d.getDate() - i);
+    return d.toISOString().split('T')[0];
+  }).reverse();
+
+  const labels = days.map(d => new Date(d).toLocaleDateString('en-US', { weekday: 'short' }));
+  const totals = days.map(date => {
+    return workers.reduce((sum, w) =>
+      sum + (w.attendance || []).filter(a => a.date === date).reduce((s, a) => s + (a.pay || 0), 0), 0);
+  });
+
+  new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels,
+      datasets: [{ label: 'Pay (KSH)', data: totals, backgroundColor: '#0a74da' }]
+    },
+    options: {
+      responsive: true,
+      scales: {
+        y: { beginAtZero: true }
+      }
+    }
+  });
 }
 
-.sidebar ul li {
-  cursor: pointer;
-  padding: 0.5rem 1rem;
-  background: #333;
-  border-radius: 5px;
-  transition: 0.3s;
+function renderWorkers() {
+  const rows = workers.map((w, i) => `
+    <tr>
+      <td>${w.name}</td>
+      <td>${w.idNumber}</td>
+      <td>${w.phone}</td>
+      <td>${w.residence}</td>
+      <td>
+        <button onclick="deleteWorker(${i})">Delete</button>
+      </td>
+    </tr>
+  `);
+  document.querySelector('#workers-table tbody').innerHTML = rows.join('');
 }
 
-.sidebar ul li:hover {
-  background: #555;
-}
-
-main {
-  padding: 1rem;
-}
-
-.cards {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 1rem;
-}
-
-.card {
-  flex: 1 1 200px;
-  background: white;
-  padding: 1rem;
-  border-radius: 8px;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.05);
-}
-
-.card.positive { border-left: 4px solid green; }
-.card.warning { border-left: 4px solid orange; }
-.card.danger { border-left: 4px solid red; }
-
-h2 {
-  margin-top: 2rem;
-}
-
-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-top: 1rem;
-  background: white;
-}
-
-th, td {
-  padding: 0.75rem;
-  border: 1px solid #ccc;
-  text-align: left;
-}
-
-th {
-  background: #0a74da;
-  color: white;
-}
-
-button {
-  margin-top: 1rem;
-  padding: 0.6rem 1.2rem;
-  background: #0a74da;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-}
-
-button:hover {
-  background: #095ab5;
-}
-
-.form-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-  gap: 1rem;
-}
-
-input, select {
-  padding: 0.6rem;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  width: 100%;
-}
-
-footer {
-  text-align: center;
-  font-size: 0.9rem;
-  color: #777;
-  margin: 2rem 0;
-}
-
-.section {
-  display: none;
-}
-.section.active {
-  display: block;
-}
-
-@media (max-width: 600px) {
-  .cards {
-    flex-direction: column;
+function deleteWorker(index) {
+  if (confirm("Are you sure you want to delete this worker?")) {
+    workers.splice(index, 1);
+    saveWorkers();
+    renderWorkers();
+    renderDashboard();
   }
 }
+
+function renderAttendanceOptions() {
+  const select = document.getElementById('select-worker');
+  select.innerHTML = workers.map((w, i) => `<option value="${i}">${w.name} (${w.idNumber})</option>`).join('');
+}
+
+document.getElementById('worker-form').addEventListener('submit', e => {
+  e.preventDefault();
+  const name = document.getElementById('name').value;
+  const id = document.getElementById('idNumber').value;
+  const phone = document.getElementById('phone').value;
+  const residence = document.getElementById('residence').value;
+  workers.push({ name, idNumber: id, phone, residence, attendance: [] });
+  saveWorkers();
+  e.target.reset();
+  renderWorkers();
+  alert('Worker added!');
+});
+
+document.getElementById('attendance-form').addEventListener('submit', e => {
+  e.preventDefault();
+  const index = document.getElementById('select-worker').value;
+  const date = document.getElementById('attDate').value;
+  const pay = parseFloat(document.getElementById('attPay').value);
+  if (!date) return alert("Please select a date");
+  workers[index].attendance.push({ date, ...(isNaN(pay) ? {} : { pay }) });
+  saveWorkers();
+  e.target.reset();
+  alert("Attendance added");
+  renderDashboard();
+});
+
+navigate('dashboard');
