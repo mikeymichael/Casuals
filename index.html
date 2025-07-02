@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Casual Workers Dashboard</title>
+  <link rel="stylesheet" href="style.css" />
+  <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+</head>
+<body>
+  <header class="topnav">
+    <h1>Casual Workers Management System</h1>
+  </header>
+  <aside class="sidebar">
+    <nav>
+      <ul>
+        <li><a href="#" onclick="showSection('dashboard')">Dashboard</a></li>
+        <li><a href="#" onclick="showSection('workers')">Workers</a></li>
+      </ul>
+    </nav>
+  </aside>
+  <main id="main-content">
+    <section id="dashboard" class="content-section active">
+      <h2>Dashboard Overview</h2>
+      <div class="cards">
+        <div class="card"><h3>Total Workers</h3><p id="total-workers">0</p></div>
+        <div class="card"><h3>Total Pay (KSH)</h3><p id="total-pay">0.00</p></div>
+      </div>
+      <h3>Weekly Worker Report</h3>
+      <button onclick="exportReport()" class="export-btn"><i class="fas fa-file-export"></i> Export Report</button>
+      <table id="report-table">
+        <thead>
+          <tr><th>Name</th><th>ID</th><th>Total Paid (Week)</th><th>Total Unpaid</th><th>Paid This Month</th></tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </section>
+    <section id="workers" class="content-section">
+      <h2>Worker Management</h2>
+      <form id="worker-form">
+        <input type="text" id="name" placeholder="Name" required />
+        <input type="text" id="idNumber" placeholder="ID Number" required />
+        <input type="text" id="residence" placeholder="Residence" required />
+        <input type="text" id="shaAccount" placeholder="SHA Account" required />
+        <button type="submit">Add Worker</button>
+      </form>
+      <table id="workers-table">
+        <thead><tr><th>Name</th><th>ID</th><th>Residence</th><th>SHA</th></tr></thead>
+        <tbody></tbody>
+      </table>
+    </section>
+  </main>
+  <footer>
+    Created and Developed by MMKibinge
+  </footer>
+  <script src="script.js"></script>
+</body>
+</html>
