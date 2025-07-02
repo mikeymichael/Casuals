@@ -1,0 +1,77 @@
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  background: #f2f4f8;
+}
+header {
+  background: #0a74da;
+  color: white;
+  padding: 1rem;
+  text-align: center;
+}
+main {
+  padding: 1rem 2rem;
+}
+.dashboard .card {
+  background: white;
+  padding: 1rem;
+  border-radius: 6px;
+  width: 200px;
+  margin-bottom: 1rem;
+}
+.actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+.actions input {
+  padding: 0.5rem;
+}
+.actions button {
+  background: #0a74da;
+  color: white;
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 4px;
+}
+table {
+  width: 100%;
+  border-collapse: collapse;
+  background: white;
+}
+th, td {
+  padding: 0.75rem;
+  border: 1px solid #ddd;
+}
+.modal {
+  display: none;
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(0,0,0,0.5);
+  justify-content: center;
+  align-items: center;
+}
+.modal-content {
+  background: white;
+  padding: 2rem;
+  border-radius: 8px;
+}
+.modal-content input {
+  display: block;
+  width: 100%;
+  margin-bottom: 1rem;
+  padding: 0.5rem;
+}
+.modal-content button {
+  padding: 0.5rem 1rem;
+  margin-right: 0.5rem;
+}
+footer {
+  text-align: center;
+  padding: 1rem;
+  background: #eee;
+  color: #555;
+  margin-top: 2rem;
+}
