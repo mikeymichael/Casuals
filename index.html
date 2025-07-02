@@ -5,40 +5,30 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Casual Workers Dashboard</title>
   <link rel="stylesheet" href="style.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
   <div class="topnav">Casual Workers Management System</div>
 
   <div class="sidebar">
     <ul>
-      <li onclick="showSection('dashboard')">Dashboard</li>
-      <li onclick="showSection('workers')">Workers</li>
+      <li onclick="navigate('dashboard')">Dashboard</li>
+      <li onclick="navigate('workers')">Workers</li>
+      <li onclick="navigate('attendance')">Mark Attendance</li>
     </ul>
   </div>
 
   <main>
+    <!-- DASHBOARD -->
     <section id="dashboard" class="section active">
       <h2>📊 Dashboard Overview</h2>
-      <div class="cards">
-        <div class="card"><strong>Total Workers</strong><br><span id="total-workers">0</span></div>
-        <div class="card"><strong>Total Pay (Week)</strong><br>KSH <span id="total-pay">0</span></div>
-        <div class="card"><strong>Total Pay (Month)</strong><br>KSH <span id="month-pay">0</span></div>
-        <div class="card"><strong>Unpaid Days</strong><br><span id="unpaid-count">0</span></div>
-        <div class="card"><strong>Avg Pay/Worker</strong><br>KSH <span id="avg-pay">0</span></div>
-      </div>
-
-      <h2>📤 Weekly Report</h2>
-      <button class="export-btn" onclick="exportReport()">Export CSV</button>
-      <table id="report-table">
-        <thead>
-          <tr><th>Name</th><th>ID</th><th>Weekly Paid</th><th>Unpaid Days</th><th>Monthly Paid</th></tr>
-        </thead>
-        <tbody></tbody>
-      </table>
+      <div class="cards" id="dash-cards"></div>
+      <canvas id="payChart" style="margin-top: 2rem;"></canvas>
     </section>
 
+    <!-- WORKERS -->
     <section id="workers" class="section">
-      <h2>🧍 Add Worker</h2>
+      <h2>👥 Manage Workers</h2>
       <form id="worker-form">
         <div class="form-grid">
           <input type="text" id="name" placeholder="Full Name" required />
@@ -49,15 +39,25 @@
         <button type="submit">Add Worker</button>
       </form>
 
-      <h2>👥 All Workers</h2>
       <table id="workers-table">
-        <thead><tr><th>Name</th><th>ID</th><th>Phone</th><th>Residence</th></tr></thead>
+        <thead><tr><th>Name</th><th>ID</th><th>Phone</th><th>Residence</th><th>Actions</th></tr></thead>
         <tbody></tbody>
       </table>
     </section>
+
+    <!-- ATTENDANCE -->
+    <section id="attendance" class="section">
+      <h2>📝 Mark Attendance</h2>
+      <form id="attendance-form">
+        <select id="select-worker"></select>
+        <input type="date" id="attDate" required />
+        <input type="number" id="attPay" placeholder="Pay (optional)" />
+        <button type="submit">Add Attendance</button>
+      </form>
+    </section>
   </main>
 
-  <footer>Built with mmk</footer>
+  <footer>Built with ❤️ by MMKibinge & GPT</footer>
   <script src="script.js"></script>
 </body>
 </html>
