@@ -54,6 +54,18 @@ document.querySelectorAll('.nav-link').forEach(link => {
     document.getElementById(page + "Page").classList.add('active');
   });
 });
+document.querySelectorAll('.nav-link').forEach(link => {
+  link.addEventListener('click', function(e) {
+    e.preventDefault();  // 🛑 Prevent reload
+    const page = this.dataset.page;
+
+    document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+    this.classList.add('active');
+
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.getElementById(page + "Page").classList.add('active');
+  });
+});
 
 saveAndRender();
 
