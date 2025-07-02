@@ -1,0 +1,90 @@
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  background: #f5f6fa;
+}
+
+header {
+  background-color: #0a74da;
+  color: white;
+  padding: 1rem;
+  text-align: center;
+}
+
+main {
+  padding: 1rem 2rem;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  background: white;
+  margin-bottom: 2rem;
+}
+
+th, td {
+  border: 1px solid #ddd;
+  padding: 0.75rem;
+  text-align: center;
+}
+
+.workday-cell {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  display: inline-block;
+  margin: 0 auto;
+  background: #ccc;
+  cursor: pointer;
+}
+
+.workday-cell.worked {
+  background: #4caf50;
+}
+
+.report {
+  background: white;
+  padding: 1rem;
+  border-radius: 6px;
+  box-shadow: 0 0 6px rgba(0,0,0,0.1);
+}
+
+footer {
+  text-align: center;
+  padding: 1rem;
+  background-color: #eee;
+  color: #555;
+}
+
+.layout { display: flex; }
+.sidebar {
+  width: 220px;
+  background: #0a74da;
+  color: white;
+  min-height: 100vh;
+  padding: 1rem;
+}
+.sidebar h2 { margin-bottom: 1rem; }
+.sidebar ul { list-style: none; padding: 0; }
+.sidebar ul li { margin-bottom: 0.5rem; }
+.sidebar ul li a {
+  color: white; text-decoration: none;
+  display: block; padding: 0.5rem;
+  border-radius: 4px;
+}
+.sidebar ul li a.active, .sidebar ul li a:hover {
+  background-color: rgba(255,255,255,0.2);
+}
+.content { flex: 1; display: flex; flex-direction: column; }
+.page { display: none; }
+.page.active { display: block; }
+.card { background: white; padding: 1rem; margin: 1rem 0; border-radius: 6px; width: 250px; }
+.actions { display: flex; justify-content: space-between; margin-bottom: 1rem; }
+.actions input { flex: 1; margin-left: 1rem; padding: 0.5rem; }
+.actions button {
+  background: #0a74da;
+  color: white;
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 4px;
+}
