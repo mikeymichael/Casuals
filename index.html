@@ -5,50 +5,109 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Casual Workers Dashboard</title>
   <link rel="stylesheet" href="style.css" />
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+  />
+  <link
+    rel="stylesheet"
+    href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.css"
+  />
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.js"></script>
 </head>
 <body>
-  <div class="topnav">Casual Workers Management System</div>
   <div class="sidebar">
+    <div class="logo">🛠️ CWMS</div>
     <ul>
-      <li onclick="navigate('dashboard')">Dashboard</li>
-      <li onclick="navigate('workers')">Workers</li>
-      <li onclick="navigate('attendance')">Mark Attendance</li>
+      <li data-page="dashboard"><i class="fas fa-chart-bar"></i> Dashboard</li>
+      <li data-page="workers"><i class="fas fa-users"></i> Workers</li>
+      <li data-page="attendance"><i class="fas fa-clipboard-list"></i> Attendance</li>
+      <li data-page="timecards"><i class="fas fa-clock"></i> Time Cards</li>
+      <li data-page="financial"><i class="fas fa-coins"></i> Employee Financial</li>
+      <li data-page="personal"><i class="fas fa-id-card"></i> Employee Personal</li>
+      <li data-page="payroll"><i class="fas fa-file-csv"></i> Payroll CSV</li>
     </ul>
+    <button id="darkModeToggle">🌙 Dark Mode</button>
   </div>
+
   <main>
     <section id="dashboard" class="section active">
       <h2>📊 Dashboard Overview</h2>
       <div class="cards" id="dash-cards"></div>
       <canvas id="payChart" style="margin-top: 2rem;"></canvas>
+      <canvas id="residenceChart" style="margin-top: 2rem;"></canvas>
     </section>
+
     <section id="workers" class="section">
       <h2>👥 Manage Workers</h2>
+      <input type="text" id="worker-search" placeholder="Search workers..." />
       <form id="worker-form">
         <div class="form-grid">
           <input type="text" id="name" placeholder="Full Name" required />
           <input type="text" id="idNumber" placeholder="ID Number" required />
           <input type="text" id="phone" placeholder="Phone Number" required />
           <input type="text" id="residence" placeholder="Residence" required />
+          <input type="number" id="dailyRate" placeholder="Daily Pay Rate" required />
         </div>
-        <button type="submit">Add Worker</button>
+        <button type="submit"><i class="fas fa-plus"></i> Add Worker</button>
       </form>
       <table id="workers-table">
-        <thead><tr><th>Name</th><th>ID</th><th>Phone</th><th>Residence</th><th>Actions</th></tr></thead>
+        <thead>
+          <tr><th>Name</th><th>ID</th><th>Phone</th><th>Residence</th><th>Daily Rate</th><th>Actions</th></tr>
+        </thead>
         <tbody></tbody>
       </table>
+      <button id="exportWorkers"><i class="fas fa-download"></i> Export Workers CSV</button>
     </section>
+
     <section id="attendance" class="section">
       <h2>📝 Mark Attendance</h2>
       <form id="attendance-form">
         <select id="select-worker"></select>
         <input type="date" id="attDate" required />
-        <input type="number" id="attPay" placeholder="Pay (optional)" />
-        <button type="submit">Add Attendance</button>
+        <input type="number" id="attHours" placeholder="Hours worked (optional)" />
+        <input type="number" id="attPay" placeholder="Override Pay (optional)" />
+        <textarea id="attNotes" placeholder="Notes (optional)"></textarea>
+        <button type="submit"><i class="fas fa-plus"></i> Add Attendance</button>
       </form>
+      <div id="calendar"></div>
+      <button id="exportAttendance"><i class="fas fa-download"></i> Export Attendance CSV</button>
+    </section>
+
+    <section id="timecards" class="section">
+      <h2>⏱️ Time Cards</h2>
+      <p>View and manage employee time cards.</p>
+      <div id="timecards-content"></div>
+    </section>
+
+    <section id="financial" class="section">
+      <h2>💰 Employee Financial</h2>
+      <p>Track financial records like payments and bonuses.</p>
+      <div id="financial-content"></div>
+    </section>
+
+    <section id="personal" class="section">
+      <h2>👤 Employee Personal</h2>
+      <p>Manage employee personal details.</p>
+      <div id="personal-content"></div>
+    </section>
+
+    <section id="payroll" class="section">
+      <h2>📂 Payroll Data</h2>
+      <p>Download payroll.csv data.</p>
+      <button id="download-payroll"><i class="fas fa-download"></i> Download Payroll CSV</button>
+    </section>
+
+    <section id="profile" class="section">
+      <h2>👤 Worker Profile</h2>
+      <div id="profile-content"></div>
     </section>
   </main>
-  <footer>Built bubbles</footer>
+
+  <div id="toast" class="toast"></div>
+
+  <footer>Built at Night5</footer>
   <script src="script.js"></script>
 </body>
 </html>
