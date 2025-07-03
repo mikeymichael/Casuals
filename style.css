@@ -1,46 +1,76 @@
-body {
-  margin: 0;
-  font-family: 'Segoe UI', sans-serif;
-  background: #f0f4f8;
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap');
+
+:root {
+  --bg-color: #f0f4f8;
+  --text-color: #333;
+  --card-bg: rgba(255,255,255,0.6);
+  --sidebar-bg: #1e1e2f;
+  --accent: #3f8efc;
+  --btn-gradient: linear-gradient(90deg, #0a74da, #3f8efc);
 }
 
-.topnav {
-  background: #0a74da;
-  color: white;
-  padding: 1rem;
-  text-align: center;
-  font-size: 1.5rem;
-  font-weight: bold;
+body.dark {
+  --bg-color: #121212;
+  --text-color: #e0e0e0;
+  --card-bg: rgba(30,30,30,0.7);
+  --sidebar-bg: #000;
+  --accent: #4a90e2;
+  --btn-gradient: linear-gradient(90deg, #1f1f1f, #3a3a3a);
+}
+
+body {
+  margin: 0;
+  font-family: 'Inter', sans-serif;
+  background: var(--bg-color);
+  color: var(--text-color);
+  transition: background 0.3s, color 0.3s;
 }
 
 .sidebar {
-  background: #1e1e2f;
-  padding: 1rem;
+  background: var(--sidebar-bg);
   color: white;
+  width: 240px;
+  min-height: 100vh;
+  padding: 1rem;
+  position: fixed;
+  top: 0;
+  left: 0;
+}
+
+.sidebar .logo {
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin-bottom: 2rem;
+  text-align: center;
 }
 
 .sidebar ul {
   list-style: none;
   padding: 0;
-  display: flex;
-  gap: 1rem;
-  flex-wrap: wrap;
-  justify-content: center;
 }
 
 .sidebar ul li {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.8rem;
   cursor: pointer;
-  padding: 0.5rem 1rem;
-  background: #333;
-  border-radius: 5px;
+  border-radius: 6px;
+  transition: background 0.3s;
 }
 
 .sidebar ul li:hover {
-  background: #555;
+  background: #333;
+}
+
+.sidebar button {
+  margin-top: 2rem;
+  width: 100%;
 }
 
 main {
-  padding: 1rem;
+  margin-left: 260px;
+  padding: 2rem;
 }
 
 .cards {
@@ -50,11 +80,25 @@ main {
 }
 
 .card {
-  flex: 1 1 200px;
-  background: white;
-  padding: 1rem;
-  border-radius: 8px;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+  background: var(--card-bg);
+  backdrop-filter: blur(8px);
+  border-radius: 12px;
+  box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+  padding: 1.5rem;
+  flex: 1 1 220px;
+  text-align: center;
+}
+
+.card h3 {
+  margin: 0;
+  font-weight: 600;
+  font-size: 1.2rem;
+}
+
+.card p {
+  margin-top: 0.5rem;
+  font-size: 1.8rem;
+  font-weight: bold;
 }
 
 table {
@@ -71,22 +115,25 @@ th, td {
 }
 
 th {
-  background: #0a74da;
+  background: var(--accent);
   color: white;
 }
 
 button {
   margin-top: 1rem;
   padding: 0.6rem 1.2rem;
-  background: #0a74da;
+  background: var(--btn-gradient);
   color: white;
+  font-weight: bold;
   border: none;
-  border-radius: 5px;
+  border-radius: 6px;
   cursor: pointer;
+  transition: all 0.3s;
 }
 
 button:hover {
-  background: #095ab5;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(0,0,0,0.2);
 }
 
 .form-grid {
@@ -95,11 +142,62 @@ button:hover {
   gap: 1rem;
 }
 
-input, select {
+input, select, textarea {
   padding: 0.6rem;
   border: 1px solid #ccc;
-  border-radius: 5px;
+  border-radius: 6px;
   width: 100%;
+  font-family: inherit;
+}
+
+input:focus, select:focus, textarea:focus {
+  outline: 2px solid var(--accent);
+}
+
+#worker-search {
+  margin-bottom: 1rem;
+  padding: 0.6rem;
+  width: 100%;
+}
+
+.section {
+  display: none;
+  opacity: 0;
+  transform: translateY(10px);
+  transition: all 0.4s ease;
+}
+
+.section.active {
+  display: block;
+  opacity: 1;
+  transform: translateY(0);
+}
+
+#calendar {
+  margin-top: 2rem;
+  background: white;
+  padding: 1rem;
+  border-radius: 12px;
+}
+
+.toast {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background: var(--accent);
+  color: white;
+  padding: 1rem 1.5rem;
+  border-radius: 6px;
+  font-weight: bold;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: all 0.4s ease;
+  z-index: 999;
+}
+
+.toast.show {
+  opacity: 1;
+  transform: translateY(0);
 }
 
 footer {
@@ -109,15 +207,52 @@ footer {
   margin: 2rem 0;
 }
 
-.section {
-  display: none;
-}
-.section.active {
-  display: block;
-}
+@media (max-width: 768px) {
+  main {
+    margin-left: 0;
+    padding: 1rem;
+  }
 
-@media (max-width: 600px) {
+  .sidebar {
+    width: 100%;
+    height: auto;
+    position: relative;
+  }
+
   .cards {
     flex-direction: column;
   }
+
+  table, thead, tbody, th, td, tr {
+    display: block;
+  }
+
+  table {
+    border: none;
+  }
+
+  th {
+    background: none;
+    color: var(--text-color);
+    font-weight: bold;
+    text-align: left;
+  }
+
+  td {
+    position: relative;
+    padding-left: 50%;
+    border: none;
+    border-bottom: 1px solid #ccc;
+  }
+
+  td::before {
+    position: absolute;
+    top: 0.75rem;
+    left: 1rem;
+    width: 45%;
+    white-space: nowrap;
+    font-weight: bold;
+    content: attr(data-label);
+  }
 }
+
