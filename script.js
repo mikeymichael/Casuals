@@ -1,15 +1,29 @@
+// ---------- Data ----------
+
 let workers = JSON.parse(localStorage.getItem('workersData')) || [{
-  name: 'John Doe', idNumber: '001', phone: '0712345678', residence: 'Nairobi',
+  name: 'John Doe',
+  idNumber: '001',
+  phone: '0712345678',
+  residence: 'Nairobi',
+  dailyRate: 500,
   attendance: [
-    { date: '2025-07-01', pay: 500 },
-    { date: '2025-07-02', pay: 600 },
+    { date: '2025-07-01', pay: 500, hours: 8, notes: 'On time' },
+    { date: '2025-07-02', pay: 600, hours: 9 },
     { date: '2025-07-03' }
-  ]
+  ],
+  notes: '',
+  photo: ''
 }];
 
-function saveWorkers() {
-  localStorage.setItem('workersData', JSON.stringify(workers));
-}
+saveWorkers();
+
+// ---------- Navigation ----------
+
+document.querySelectorAll('.sidebar ul li').forEach(li => {
+  li.addEventListener('click', () => {
+    navigate(li.dataset.page);
+  });
+});
 
 function navigate(id) {
   document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
@@ -18,104 +32,138 @@ function navigate(id) {
     section.classList.add('active');
     if (id === 'dashboard') renderDashboard();
     if (id === 'workers') renderWorkers();
-    if (id === 'attendance') renderAttendanceOptions();
+    if (id === 'attendance') renderAttendance();
+    if (id === 'timecards') renderTimeCards();
+    if (id === 'financial') renderFinancial();
+    if (id === 'personal') renderPersonal();
+    if (id === 'payroll') renderPayroll();
   }
 }
 
+// ---------- Dark Mode ----------
+
+document.getElementById('darkModeToggle').addEventListener('click', () => {
+  document.body.classList.toggle('dark');
+});
+
+// ---------- Dashboard ----------
+
 function renderDashboard() {
+  let totalWorkers = workers.length;
+  let monthTotal = 0;
+  let residenceCounts = {};
+  let topWorker = '-';
+  let maxPay = 0;
+
   const now = new Date();
   const month = now.getMonth();
-  const weekDates = [...Array(7)].map((_, i) => {
-    const d = new Date(now);
-    d.setDate(d.getDate() - i);
-    return d.toISOString().split('T')[0];
-  });
-
-  let total = 0, monthTotal = 0, unpaid = 0;
-  let topWorker = '-', maxPay = 0, lastDate = '-';
 
   workers.forEach(w => {
-    let weekPay = 0, missed = 0, monthlyPay = 0;
+    let monthlyPay = 0;
     (w.attendance || []).forEach(a => {
-      const adate = a.date;
-      const pay = a.pay || 0;
-      if (weekDates.includes(adate)) weekPay += pay;
-      if (!a.pay) missed++;
-      if (new Date(adate).getMonth() === month) monthlyPay += pay;
-      if (!lastDate || new Date(adate) > new Date(lastDate)) lastDate = adate;
+      if (a.date && new Date(a.date).getMonth() === month) {
+        monthlyPay += a.pay || 0;
+      }
     });
     if (monthlyPay > maxPay) {
-      topWorker = w.name;
       maxPay = monthlyPay;
+      topWorker = w.name;
     }
-    total += weekPay;
     monthTotal += monthlyPay;
-    unpaid += missed;
+
+    residenceCounts[w.residence] = (residenceCounts[w.residence] || 0) + 1;
   });
 
   document.getElementById('dash-cards').innerHTML = `
-    <div class="card"><strong>Total Workers</strong><br>${workers.length}</div>
-    <div class="card"><strong>Total Weekly Pay</strong><br>KSH ${total}</div>
-    <div class="card"><strong>Total Monthly Pay</strong><br>KSH ${monthTotal}</div>
-    <div class="card"><strong>Unpaid Days</strong><br>${unpaid}</div>
-    <div class="card"><strong>Top Earner</strong><br>${topWorker} (${maxPay})</div>
-    <div class="card"><strong>Last Attendance</strong><br>${lastDate}</div>
+    <div class="card"><h3>Total Workers</h3><p>${totalWorkers}</p></div>
+    <div class="card"><h3>Monthly Pay</h3><p>KSH ${monthTotal}</p></div>
+    <div class="card"><h3>Top Earner</h3><p>${topWorker} (${maxPay})</p></div>
   `;
 
-  renderChart(weekDates.reverse());
+  renderResidenceChart(residenceCounts);
+  renderPayChart();
 }
 
-function renderChart(weekDates) {
-  const ctx = document.getElementById('payChart').getContext('2d');
-  const labels = weekDates.map(d => new Date(d).toLocaleDateString('en-US', { weekday: 'short' }));
-  const totals = weekDates.map(date => {
-    return workers.reduce((sum, w) => {
-      return sum + (w.attendance || []).filter(a => a.date === date).reduce((s, a) => s + (a.pay || 0), 0);
-    }, 0);
-  });
+function renderResidenceChart(counts) {
+  const ctx = document.getElementById('residenceChart').getContext('2d');
+  const labels = Object.keys(counts);
+  const data = Object.values(counts);
 
-  if (window.payChart) window.payChart.destroy();
+  if (window.residenceChartInstance) {
+    window.residenceChartInstance.destroy();
+  }
 
-  window.payChart = new Chart(ctx, {
-    type: 'bar',
+  window.residenceChartInstance = new Chart(ctx, {
+    type: 'pie',
     data: {
       labels,
-      datasets: [{ label: 'Pay (KSH)', data: totals, backgroundColor: '#0a74da' }]
-    },
-    options: {
-      responsive: true,
-      scales: {
-        y: { beginAtZero: true }
-      }
+      datasets: [{
+        data,
+        backgroundColor: ['#3f8efc', '#0a74da', '#095ab5', '#ff9800', '#4caf50']
+      }]
     }
   });
 }
 
+function renderPayChart() {
+  const ctx = document.getElementById('payChart').getContext('2d');
+  const dates = [...new Set(
+    workers.flatMap(w => w.attendance.map(a => a.date))
+  )].filter(Boolean).sort();
+
+  const totals = dates.map(date => {
+    return workers.reduce((sum, w) => {
+      return sum + (w.attendance || []).filter(a => a.date === date)
+        .reduce((s, a) => s + (a.pay || 0), 0);
+    }, 0);
+  });
+
+  if (window.payChartInstance) {
+    window.payChartInstance.destroy();
+  }
+
+  window.payChartInstance = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: dates,
+      datasets: [{
+        label: 'Total Pay (KSH)',
+        data: totals,
+        backgroundColor: '#3f8efc'
+      }]
+    },
+    options: {
+      responsive: true,
+      scales: { y: { beginAtZero: true } }
+    }
+  });
+}
+
+// ---------- Workers ----------
+
 function renderWorkers() {
-  const rows = workers.map((w, i) => `
+  const tbody = document.querySelector('#workers-table tbody');
+  const searchVal = document.getElementById('worker-search').value?.toLowerCase() || '';
+
+  const filtered = workers.filter(w =>
+    w.name.toLowerCase().includes(searchVal) ||
+    w.idNumber.toLowerCase().includes(searchVal) ||
+    w.residence.toLowerCase().includes(searchVal)
+  );
+
+  tbody.innerHTML = filtered.map((w, i) => `
     <tr>
       <td>${w.name}</td>
       <td>${w.idNumber}</td>
       <td>${w.phone}</td>
       <td>${w.residence}</td>
-      <td><button onclick="deleteWorker(${i})">Delete</button></td>
+      <td>${w.dailyRate}</td>
+      <td>
+        <button onclick="showProfile(${i})"><i class="fas fa-eye"></i> Profile</button>
+        <button onclick="deleteWorker(${i})"><i class="fas fa-trash"></i> Delete</button>
+      </td>
     </tr>
-  `);
-  document.querySelector('#workers-table tbody').innerHTML = rows.join('');
-}
-
-function deleteWorker(i) {
-  if (confirm("Are you sure you want to delete this worker?")) {
-    workers.splice(i, 1);
-    saveWorkers();
-    renderWorkers();
-    renderDashboard();
-  }
-}
-
-function renderAttendanceOptions() {
-  const select = document.getElementById('select-worker');
-  select.innerHTML = workers.map((w, i) => `<option value="${i}">${w.name} (${w.idNumber})</option>`).join('');
+  `).join('');
 }
 
 document.getElementById('worker-form').addEventListener('submit', e => {
@@ -124,25 +172,206 @@ document.getElementById('worker-form').addEventListener('submit', e => {
   const id = document.getElementById('idNumber').value;
   const phone = document.getElementById('phone').value;
   const residence = document.getElementById('residence').value;
-  workers.push({ name, idNumber: id, phone, residence, attendance: [] });
+  const dailyRate = parseFloat(document.getElementById('dailyRate').value);
+  workers.push({ name, idNumber: id, phone, residence, dailyRate, attendance: [], notes: '' });
   saveWorkers();
   e.target.reset();
   renderWorkers();
-  alert('Worker added!');
+  showToast('Worker added!');
 });
+
+document.getElementById('worker-search').addEventListener('input', renderWorkers);
+
+document.getElementById('exportWorkers').addEventListener('click', () => {
+  const rows = [['Name', 'ID', 'Phone', 'Residence', 'Daily Rate']];
+  workers.forEach(w => rows.push([w.name, w.idNumber, w.phone, w.residence, w.dailyRate]));
+  downloadCSV(rows, 'workers.csv');
+});
+
+function deleteWorker(i) {
+  if (confirm("Delete this worker?")) {
+    workers.splice(i, 1);
+    saveWorkers();
+    renderWorkers();
+    renderDashboard();
+    showToast('Worker deleted!');
+  }
+}
+
+function showProfile(i) {
+  const w = workers[i];
+  const attendance = (w.attendance || []).map(a => `
+    <tr>
+      <td>${a.date}</td>
+      <td>${a.hours || '-'}</td>
+      <td>${a.pay || '-'}</td>
+      <td>${a.notes || ''}</td>
+    </tr>
+  `).join('');
+
+  document.getElementById('profile-content').innerHTML = `
+    <h3>${w.name}</h3>
+    <p><strong>ID:</strong> ${w.idNumber}</p>
+    <p><strong>Phone:</strong> ${w.phone}</p>
+    <p><strong>Residence:</strong> ${w.residence}</p>
+    <p><strong>Daily Rate:</strong> ${w.dailyRate}</p>
+    <textarea id="worker-notes" placeholder="Add notes...">${w.notes || ''}</textarea>
+    <button onclick="saveWorkerNotes(${i})">Save Notes</button>
+    <h4>Attendance</h4>
+    <table>
+      <thead><tr><th>Date</th><th>Hours</th><th>Pay</th><th>Notes</th></tr></thead>
+      <tbody>${attendance}</tbody>
+    </table>
+  `;
+  navigate('profile');
+}
+
+function saveWorkerNotes(i) {
+  const notes = document.getElementById('worker-notes').value;
+  workers[i].notes = notes;
+  saveWorkers();
+  showToast('Notes saved!');
+}
+
+// ---------- Attendance ----------
+
+function renderAttendance() {
+  renderAttendanceOptions();
+  renderCalendar();
+}
+
+function renderAttendanceOptions() {
+  const select = document.getElementById('select-worker');
+  select.innerHTML = workers.map((w, i) =>
+    `<option value="${i}">${w.name} (${w.idNumber})</option>`
+  ).join('');
+}
 
 document.getElementById('attendance-form').addEventListener('submit', e => {
   e.preventDefault();
   const index = document.getElementById('select-worker').value;
   const date = document.getElementById('attDate').value;
+  const hours = parseFloat(document.getElementById('attHours').value);
   const pay = parseFloat(document.getElementById('attPay').value);
-  if (!date) return alert("Select a date");
-  workers[index].attendance.push({ date, ...(isNaN(pay) ? {} : { pay }) });
+  const notes = document.getElementById('attNotes').value;
+
+  let calculatedPay = isNaN(pay)
+    ? (workers[index].dailyRate * (isNaN(hours) ? 1 : (hours / 8)))
+    : pay;
+
+  workers[index].attendance.push({
+    date,
+    pay: calculatedPay,
+    hours: isNaN(hours) ? null : hours,
+    notes
+  });
+
   saveWorkers();
+  renderCalendar();
   e.target.reset();
-  alert("Attendance added");
-  renderDashboard();
+  showToast('Attendance added!');
 });
 
-// Init dashboard
+document.getElementById('exportAttendance').addEventListener('click', () => {
+  const rows = [['Name','Date','Hours','Pay','Notes']];
+  workers.forEach(w => {
+    (w.attendance || []).forEach(a => {
+      rows.push([
+        w.name,
+        a.date || '',
+        a.hours || '',
+        a.pay || '',
+        a.notes || ''
+      ]);
+    });
+  });
+  downloadCSV(rows, 'attendance.csv');
+});
+
+function renderCalendar() {
+  const events = workers.flatMap(w =>
+    (w.attendance || []).map(a => ({
+      title: `${w.name}: KSH ${a.pay}`,
+      date: a.date,
+      backgroundColor: a.pay ? '#3f8efc' : '#f44336'
+    }))
+  );
+
+  const calendarEl = document.getElementById('calendar');
+  calendarEl.innerHTML = '';
+
+  const calendar = new FullCalendar.Calendar(calendarEl, {
+    initialView: 'dayGridMonth',
+    events
+  });
+  calendar.render();
+}
+
+// ---------- Other Pages ----------
+
+function renderTimeCards() {
+  document.getElementById('timecards-content').innerHTML = `
+    <div class="card"><h3>Total Time Cards</h3><p>${workers.length * 5} entries</p></div>
+  `;
+}
+
+function renderFinancial() {
+  document.getElementById('financial-content').innerHTML = `
+    <div class="card"><h3>Total Bonuses Paid</h3><p>KSH 20,000</p></div>
+  `;
+}
+
+function renderPersonal() {
+  document.getElementById('personal-content').innerHTML = `
+    <table>
+      <thead><tr><th>Name</th><th>ID</th><th>Email</th><th>Address</th></tr></thead>
+      <tbody>
+        ${workers.map(w => `
+          <tr>
+            <td>${w.name}</td>
+            <td>${w.idNumber}</td>
+            <td>${w.name.toLowerCase().replace(' ', '.')}@example.com</td>
+            <td>${w.residence}</td>
+          </tr>
+        `).join('')}
+      </tbody>
+    </table>
+  `;
+}
+
+function renderPayroll() {
+  document.getElementById('download-payroll').onclick = () => {
+    const rows = [['Name', 'ID', 'Total Pay']];
+    workers.forEach(w => {
+      const totalPay = w.attendance.reduce((sum, a) => sum + (a.pay || 0), 0);
+      rows.push([w.name, w.idNumber, totalPay]);
+    });
+    downloadCSV(rows, 'payroll.csv');
+  };
+}
+
+// ---------- Utilities ----------
+
+function saveWorkers() {
+  localStorage.setItem('workersData', JSON.stringify(workers));
+}
+
+function downloadCSV(rows, filename) {
+  const csv = rows.map(r => r.join(',')).join('\n');
+  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+  const link = document.createElement('a');
+  link.href = URL.createObjectURL(blob);
+  link.download = filename;
+  link.click();
+}
+
+function showToast(msg) {
+  const toast = document.getElementById('toast');
+  toast.textContent = msg;
+  toast.classList.add('show');
+  setTimeout(() => toast.classList.remove('show'), 3000);
+}
+
+// ---------- Init ----------
+
 navigate('dashboard');
